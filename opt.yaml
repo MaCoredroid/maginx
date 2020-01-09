@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maginx
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: maginx
+  template:
+    metadata:
+      labels:
+        name: maginx
+    spec:
+      containers:
+      - name: maginx
+        image: macoredroid/nginx:16.4
+        resources:
+          limits:
+            cpu: 500m
+            memory: 200Mi
+        ports:
+        - containerPort: 8081
+        securityContext:
+          privileged: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maginx
+  labels:
+    name: maginx
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+  - name: maginx
+    port: 8081
+    targetPort: 8081
+    nodePort: 30361
+  selector:
+    name: maginx
